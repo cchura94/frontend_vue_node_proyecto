@@ -24,6 +24,7 @@ export default function Api(){
             // error de auth (401)
             if(error.response?.status === 401){
                 console.log("INTERCEPTOR ERROR 401");
+                localStorage.removeItem("access_token")
                 location.href = "/auth/login"
             }
             // error de permisos (403)
