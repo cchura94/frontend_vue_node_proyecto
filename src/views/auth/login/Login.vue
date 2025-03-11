@@ -12,6 +12,7 @@
   <br>
   {{ datosss }}
   <hr>
+  
 </template>
 
 <script setup>
