@@ -39,7 +39,49 @@
         </tbody>
     </table>
 
+    <br>
+
     
+
+
+
+    <div class="card">
+        <Button label="Nuevo Usuario" @click="visible = true" />
+        <DataTable :value="usuarios" tableStyle="min-width: 50rem">
+            <Column field="id" header="ID"></Column>
+            <Column field="name" header="NOMBRE"></Column>
+            <Column field="email" header="CORREO"></Column>
+            <Column field="created_at" header="Creado en"></Column>
+            <Column :exportable="false" style="min-width: 12rem">
+                <template #body="slotProps">
+                    <Button icon="pi pi-pencil"  rounded class="mr-2" @click="funEditar(slotProps.data)" />
+                    <Button icon="pi pi-trash" rounded severity="danger" @click="confirmDeleteProduct(slotProps.data)" />
+                </template>
+            </Column>
+        </DataTable>
+
+    </div>
+
+    <Dialog v-model:visible="visible" modal header="Datos Usuario" :style="{ width: '25rem' }">
+        <span class="text-surface-500 dark:text-surface-400 block mb-8">Actualice los datos.</span>
+        <div class="flex items-center gap-4 mb-4">
+            <label for="username" class="font-semibold w-24">Nombre</label>
+            <InputText id="username" class="flex-auto" autocomplete="off" v-model="usuario.name" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="email" class="font-semibold w-24">Correo</label>
+            <InputText id="email" class="flex-auto" autocomplete="off" v-model="usuario.email" />
+        </div>
+        <div class="flex items-center gap-4 mb-8">
+            <label for="pass" class="font-semibold w-24">Contraseña</label>
+            <InputText type="password" id="pass" class="flex-auto" autocomplete="off" v-model="usuario.password"/>
+        </div>
+        
+        <div class="flex justify-end gap-2">
+            <Button type="button" label="Cancelar" severity="secondary" @click="visible = false"></Button>
+            <Button type="button" label="Guardar Usuario" @click="funRegistrarUsuario()"></Button>
+        </div>
+    </Dialog>
 
 </template>
 <script setup>
@@ -48,6 +90,7 @@ import userService from '../../../services/user.service';
 
 const usuarios = ref([]);
 const usuario = ref({});
+const visible = ref(false);
 
 onMounted(() => {
     getUsuarios()
@@ -72,12 +115,14 @@ async function funRegistrarUsuario(){
             getUsuarios();
             usuario.value = {}
 
+            visible.value = false
+
         }else{
             const {data} = await userService.guardar(usuario.value);
             console.log(data);
             getUsuarios();
             usuario.value = {}
-
+            visible.value = false
         }
     } catch (error) {
         
@@ -86,6 +131,7 @@ async function funRegistrarUsuario(){
 
 async function funEditar(user){
     usuario.value = user;
+    visible.value = true;
 }
 
 async function funEliminar(user){

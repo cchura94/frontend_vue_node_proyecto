@@ -8,6 +8,7 @@ import User from "../views/admin/user/User.vue";
 import AppLayout from "../layout/AppLayout.vue"
 import Categoria from "../views/admin/categoria/Categoria.vue"
 import SitioLayout from "../views/SitioLayout.vue"
+import Producto from "./../views/admin/producto/Producto.vue"
 
 const routes = [
     {
@@ -50,6 +51,12 @@ const routes = [
                 component: Categoria,
                 meta: {requireAuth: true},
                 name: 'Categoria'
+            },
+            {
+                path: 'producto',
+                component: Producto,
+                meta: {requireAuth: true},
+                name: 'Producto'
             }
         ]
     },
