@@ -75,6 +75,49 @@
             </Dialog>
 
 
+
+            <Dialog v-model:visible="productDialog" :style="{ width: '450px' }" header="Detalle de Producto" :modal="true">
+            <div class="flex flex-col gap-6">
+                {{ producto }}
+                <img v-if="producto.imagen" :src="`http://127.0.0.1:3000/${producto.imagen}`" :alt="producto.imagen" class="block m-auto pb-4" />
+                <div>
+                    <label for="name" class="block font-bold mb-3">Nombre</label>
+                    <InputText id="name" v-model.trim="producto.nombre" required="true" autofocus :invalid="submitted && !producto.nombre" fluid />
+                    <small v-if="submitted && !producto.nombre" class="text-red-500">El nombre es obligatorio.</small>
+                </div>
+                <div>
+                    <label for="description" class="block font-bold mb-3">Descripción</label>
+                    <Textarea id="description" v-model="producto.descripcion" rows="3" cols="20" fluid />
+                </div>
+
+                <div>
+                    <span class="block font-bold mb-4">Categoria</span>
+                    <div class="grid grid-cols-12 gap-4">
+                        <div class="flex items-center gap-2 col-span-6" v-for="cat in categorias">
+                            <RadioButton :id="`category${cat.id}`" v-model="producto.categoriaId" name="categoriaId" :value="cat.id" />
+                            <label :for="`category${cat.id}`">{{cat.nombre}}</label>
+                        </div>                        
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-4">
+                    <div class="col-span-6">
+                        <label for="price" class="block font-bold mb-3">Precio</label>
+                        <InputNumber id="price" v-model="producto.precio" mode="currency" currency="USD" locale="en-US" fluid />
+                    </div>
+                    <div class="col-span-6">
+                        <label for="quantity" class="block font-bold mb-3">Cantidad</label>
+                        <InputNumber id="quantity" v-model="producto.stock" integeronly fluid />
+                    </div>
+                </div>
+            </div>
+
+            <template #footer>
+                <Button label="Cancelar" icon="pi pi-times" text @click="hideDialog" />
+                <Button label="Guardar" icon="pi pi-check" @click="saveProduct" />
+            </template>
+        </Dialog>
+
             
 
     </div>
@@ -83,6 +126,8 @@
 <script setup>
 import { onMounted, onUpdated, ref } from 'vue';
 import productoService from '../../../services/producto.service';
+import categoriaService from '../../../services/categoria.service'
+import Swal from 'sweetalert2';
 
 
 const products = ref([]);
@@ -91,7 +136,11 @@ const lazyParams = ref({});
 const buscar = ref("");
 const producto = ref({})
 const dialogImagen = ref(false)
-const dt = ref(null)
+const dt = ref(null);
+
+const productDialog = ref(false)
+const submitted = ref(false)
+const categorias = ref([]);
 
 onMounted(() => {
     lazyParams.value = {
@@ -101,12 +150,19 @@ onMounted(() => {
     }
     
     getProductos();
+
+    getCategorias()
 })
 
 async function getProductos(){
     const {data} = await productoService.listar(lazyParams.value.page+1, lazyParams.value.rows, buscar.value);
     products.value = data.rows;
     totalRecords.value = data.count;
+}
+
+async function getCategorias(){
+    const {data} = await categoriaService.listar();
+    categorias.value = data;
 }
 
 function formatCurrency(value) {
@@ -141,11 +197,76 @@ const subirImagenProducto = async (event) => {
     getProductos();
     dialogImagen.value = false;
 
+    Swal.fire({
+        title: "Imagen Actualizada!",
+        text: "Ok Para continuar!",
+        icon: "success"
+    });
+
 }
 
 const openNew = () => {
 
+    productDialog.value = true;
 
+}
+
+const hideDialog = () => {
+    productDialog.value = false;
+
+}
+
+const saveProduct = async () => {
+
+    if(producto.value.id){
+        // modificar
+        try {
+            
+            const {data} = await productoService.modificar(producto.value.id, producto.value);
+
+            productDialog.value = false;
+            getProductos();
+            Swal.fire({
+                title: "Producto Actualizado!",
+                text: "Ok Para continuar!",
+                icon: "success"
+            });
+        } catch (error) {
+            productDialog.value = false;
+            Swal.fire({
+                title: "Ocurrió un error al modificar el producto!",
+                text: "Ok Para continuar!",
+                icon: "error"
+            });
+        }
+
+    }else{
+        // guardar nuevo producto
+        try {
+            
+            const {data} = await productoService.guardar(producto.value);
+
+            productDialog.value = false;
+            getProductos();
+            Swal.fire({
+                title: "Producto Registrado!",
+                text: "Ok Para continuar!",
+                icon: "success"
+            });
+        } catch (error) {
+            Swal.fire({
+                title: "Ocurrió un error al registrar el producto!",
+                text: "Ok Para continuar!",
+                icon: "error"
+            });
+        }
+    }
+
+}
+
+function editProduct(datos){
+    producto.value = datos;
+    productDialog.value = true;
 }
 
 function exportCSV() {

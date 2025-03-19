@@ -24,7 +24,14 @@ const model = ref([
                 to: '/admin/usuario'
             }
         ]
-    }
+    },
+    {
+        label: 'Gestión Pedidos',
+        items: [
+            { label: 'Nuevo Pedido', icon: 'pi pi-fw pi-id-card', to: '/admin/pedido/nuevo' },
+            { label: 'Lista Pedidos', icon: 'pi pi-fw pi-check-square', to: '/admin/pedido' }
+        ]
+    },
 ]);
 </script>
 

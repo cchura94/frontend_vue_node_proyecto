@@ -9,6 +9,9 @@ import AppLayout from "../layout/AppLayout.vue"
 import Categoria from "../views/admin/categoria/Categoria.vue"
 import SitioLayout from "../views/SitioLayout.vue"
 import Producto from "./../views/admin/producto/Producto.vue"
+import ListaPedido from "../views/admin/pedido/ListaPedido.vue";
+import NuevoPedido from "../views/admin/pedido/NuevoPedido.vue";
+import MostrarPedido from "../views/admin/pedido/MostrarPedido.vue";
 
 const routes = [
     {
@@ -57,6 +60,24 @@ const routes = [
                 component: Producto,
                 meta: {requireAuth: true},
                 name: 'Producto'
+            },
+            {
+                path: 'pedido',
+                component: ListaPedido,
+                meta: {requireAuth: true},
+                name: 'ListaPedido'
+            },
+            {
+                path: 'pedido/nuevo',
+                component: NuevoPedido,
+                meta: {requireAuth: true},
+                name: 'NuevoPedido'
+            },
+            {
+                path: 'pedido/:id',
+                component: MostrarPedido,
+                meta: {requireAuth: true},
+                name: 'MostrarPedido'
             }
         ]
     },
