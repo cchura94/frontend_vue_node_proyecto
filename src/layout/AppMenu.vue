@@ -6,7 +6,10 @@ import AppMenuItem from './AppMenuItem.vue';
 const model = ref([
     {
         label: 'Admin',
-        items: [{ label: 'Administración', icon: 'pi pi-fw pi-home', to: '/admin' }]
+        items: [
+            { label: 'Administración', icon: 'pi pi-fw pi-home', to: '/admin' },
+            { label: 'Mi Perfil', icon: 'pi pi-fw pi-user', to: '/admin/perfil' },
+        ]
     },
     {
         label: 'Gestión Inventarios',
