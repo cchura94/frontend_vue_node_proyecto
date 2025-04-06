@@ -20,7 +20,7 @@ FROM nginx:alpine
 COPY --from=build /usr/src/app/dist /usr/share/nginx/html
 
 # Exponer el puerto 
-EXPOSE 80
+EXPOSE 85
 
 # Comando para correr la aplicación
 # CMD [ "npm", "run", "start" ]
